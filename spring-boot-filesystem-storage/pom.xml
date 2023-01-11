@@ -12,9 +12,9 @@
 	</parent>
 	
 	<groupId>com.sas</groupId>
-	<artifactId>storage-service</artifactId>
-	<version>1.0.1</version>
-	<name>storage-service</name>
+	<artifactId>spring-boot-filesystem-storage</artifactId>
+	<version>1.0.0</version>
+	<name>spring-boot-filesystem-storage</name>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -29,7 +29,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
