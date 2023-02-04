@@ -1,7 +1,17 @@
 server:
-  port: 8085
+  port: 8080
   servlet:
     context-path: /cloud
+spring:
+  config:
+    activate:
+      on-profile: dev
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 50MB
+      max-file-size: 50MB
+      max-request-size: 50MB
 
 cloud:
   aws:
@@ -13,14 +23,3 @@ cloud:
     stack:
       auto: false
   bucketName: your_bucket_name
-
-spring:
-  config:
-    activeate:
-      on-profile: dev
-  servlet:
-    multipart:
-      enabled: true
-      file-size-threshold: 5MB
-      max-file-size: 10MB
-      max-request-size: 10MB

@@ -1,29 +1,37 @@
 package com.sas.controller;
 
-
 import com.sas.service.StorageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
+/**
+ * Upload and download file to AWS
+ */
+@Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 public class StorageController {
 
-    @Autowired
-    private StorageService service;
+    private final StorageService storageService;
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) {
-        return new ResponseEntity<>(service.uploadFile(file), HttpStatus.OK);
+    @PostMapping("/uploadFile")
+    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) throws IOException {
+        log.info("Request initiated to upload file {} to AWS", file.getOriginalFilename());
+        return new ResponseEntity<>(storageService.uploadFile(file), HttpStatus.OK);
     }
 
     @GetMapping("/download/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
-        byte[] data = service.downloadFile(fileName);
+        log.info("Request initiated to download file {} ", fileName);
+        byte[] data = storageService.downloadFile(fileName);
         ByteArrayResource resource = new ByteArrayResource(data);
         return ResponseEntity
                 .ok()
@@ -35,6 +43,6 @@ public class StorageController {
 
     @DeleteMapping("/delete/{fileName}")
     public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
-        return new ResponseEntity<>(service.deleteFile(fileName), HttpStatus.OK);
+        return new ResponseEntity<>(storageService.deleteFile(fileName), HttpStatus.OK);
     }
 }

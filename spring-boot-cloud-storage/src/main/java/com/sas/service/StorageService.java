@@ -1,11 +1,13 @@
 package com.sas.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import com.sas.config.AwsProperties;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,21 +18,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-@Service
 @Slf4j
+@Service
+@AllArgsConstructor
 public class StorageService {
 
-    @Autowired
-    private AmazonS3 s3Client;
+    private final AmazonS3 s3Client;
 
-    @Autowired
-    private AwsProperties awsProperties;
+    private final AwsProperties awsProperties;
 
-    public String uploadFile(MultipartFile file) {
-        File fileObj = convertMultiPartFileToFile(file);
+    public String uploadFile(MultipartFile file) throws IOException {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(file.getContentType());
+        objectMetadata.setContentLength(file.getSize());
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        s3Client.putObject(new PutObjectRequest(awsProperties.getBucketName(), fileName, fileObj));
-        fileObj.delete();
+        s3Client.putObject(new PutObjectRequest(awsProperties.getBucketName(), fileName, file.getInputStream(), objectMetadata));
         return "File uploaded : " + fileName;
     }
 
@@ -46,20 +48,8 @@ public class StorageService {
         return null;
     }
 
-
     public String deleteFile(String fileName) {
         s3Client.deleteObject(awsProperties.getBucketName(), fileName);
         return fileName + " removed ...";
-    }
-
-
-    private File convertMultiPartFileToFile(MultipartFile file) {
-        File convertedFile = new File(file.getOriginalFilename());
-        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-            fos.write(file.getBytes());
-        } catch (IOException e) {
-            log.error("Error converting multipartFile to file", e);
-        }
-        return convertedFile;
     }
 }
