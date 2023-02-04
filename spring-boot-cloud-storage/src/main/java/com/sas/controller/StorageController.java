@@ -45,4 +45,24 @@ public class StorageController {
     public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
         return new ResponseEntity<>(storageService.deleteFile(fileName), HttpStatus.OK);
     }
+
+
+    @PostMapping("/uploadFileToPath")
+    public ResponseEntity<String> uploadFileToPath(@RequestParam Long clientId, @RequestParam Long appId, @RequestParam String documentType, @RequestParam(value = "file") MultipartFile file) throws IOException {
+        log.info("Request initiated to upload file {} to AWS", file.getOriginalFilename());
+        return new ResponseEntity<>(storageService.uploadFileToPath(clientId, appId, documentType, file), HttpStatus.OK);
+    }
+
+    @GetMapping("/downloadFromPath")
+    public ResponseEntity<ByteArrayResource> downloadFromPath(@RequestParam String fileName) {
+        log.info("Request initiated to download file {} ", fileName);
+        byte[] data = storageService.downloadFile(fileName);
+        ByteArrayResource resource = new ByteArrayResource(data);
+        return ResponseEntity
+                .ok()
+                .contentLength(data.length)
+                .header("Content-type", "application/octet-stream")
+                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
+                .body(resource);
+    }
 }

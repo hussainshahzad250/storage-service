@@ -52,4 +52,18 @@ public class StorageService {
         s3Client.deleteObject(awsProperties.getBucketName(), fileName);
         return fileName + " removed ...";
     }
+
+    public String uploadFileToPath(Long clientId, Long appId, String documentType, MultipartFile file) {
+        try {
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(file.getContentType());
+            objectMetadata.setContentLength(file.getSize());
+            String filePath = String.format("%d/%d/%s/%s", clientId, appId, documentType, file.getOriginalFilename().replace(" ", "_"));
+            s3Client.putObject(new PutObjectRequest(awsProperties.getBucketName(), filePath, file.getInputStream(), objectMetadata));
+            log.info("File {} uploaded to path {}", file.getOriginalFilename(), filePath);
+            return "File uploaded successfully";
+        } catch (Exception exception) {
+            return "File upload failed";
+        }
+    }
 }

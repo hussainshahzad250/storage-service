@@ -23,3 +23,8 @@ cloud:
     stack:
       auto: false
   bucketName: your_bucket_name
+
+#========LOGGING=====================
+logging.file.name: /home/ubuntu/logs/app.log
+logging.level.com.sas: DEBUG
+logging.level.org.springframework.web.servlet.DispatcherServlet: DEBUG
