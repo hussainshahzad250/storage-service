@@ -48,7 +48,7 @@ public class StorageController {
 
 
     @PostMapping("/uploadFileToPath")
-    public ResponseEntity<String> uploadFileToPath(@RequestParam Long clientId, @RequestParam Long appId, @RequestParam String documentType, @RequestParam(value = "file") MultipartFile file) throws IOException {
+    public ResponseEntity<String> uploadFileToPath(@RequestParam Long clientId, @RequestParam Long appId, @RequestParam String documentType, @RequestParam(value = "file") MultipartFile file) {
         log.info("Request initiated to upload file {} to AWS", file.getOriginalFilename());
         return new ResponseEntity<>(storageService.uploadFileToPath(clientId, appId, documentType, file), HttpStatus.OK);
     }
@@ -62,7 +62,7 @@ public class StorageController {
                 .ok()
                 .contentLength(data.length)
                 .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
+                .header("Content-disposition", "attachment; filename=" + fileName)
                 .body(resource);
     }
 }
